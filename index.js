@@ -33,10 +33,37 @@ server.get("/api/users/:id", (request, response) => {
 
     db.findById(id)
         .then(data => {
-            response.status(200).json(data);
+            // zero means no user found with specified ID; SQLite servers start at index 1
+            if (data === 0)
+                { response.status(404).json({ message: "The user with the specified ID does not exist." }) }
+            // return the user object
+            else
+                { response.status(200).json(data); }
         })
         .catch(error => {
-            response.status(404).json({ message: "The user with the specified ID does not exist." })
+            response.status(500).json({ message: "The user's information could not be retrieved." })
+        })
+    
+})
+
+
+// DELETE request: /api/users/:id
+server.delete("/api/users/:id", (request, response) => {
+
+    const { id } = request.params;
+
+    db.remove(id)
+        .then(data => {
+
+            // zero means no user found with specified ID; SQLite servers start at index 1
+            if (data === 0)
+                { response.status(404).json({ message: "The user with the specified ID does not exist." }) }
+            // return the contents of the deleted object
+            else
+                { response.status(200).json(data); }
+        })
+        .catch(error => {
+            response.status(500).json({ message: "The user information could not be retrieved." })
         })
     
 })
