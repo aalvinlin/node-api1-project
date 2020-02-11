@@ -85,7 +85,7 @@ server.delete("/api/users/:id", (request, response) => {
     db.findById(id)
         .then(user => {
             
-            if (!data)
+            if (!user)
                 { response.status(404).json({ message: "The user with the specified ID does not exist." }) }
             
             // user exists; try to delete
@@ -106,4 +106,34 @@ server.delete("/api/users/:id", (request, response) => {
         })
 
     
+})
+
+// PUT request: /api/users/:id
+server.put("/api/users/:id", (quest, response) => {
+
+    const { id } = request.params;
+
+    // first check to see whether user exists
+    db.findById(id)
+        .then(user => {
+            
+            if (!data)
+                { response.status(404).json({ message: "The user with the specified ID does not exist." }) }
+            
+            // user exists; try to delete
+            else
+                {
+                    db.remove(id)
+                        // return info of deleted user
+                        .then(data => {
+                            response.status(200).json(user);
+                        })
+                        .catch(error => {
+                            response.status(500).json({ message: "The user information could not be retrieved." })
+                        })
+                }
+        })
+        .catch(error => {
+            response.status(500).json({ message: "The user information could not be retrieved." })
+        })
 })
