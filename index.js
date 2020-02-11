@@ -63,11 +63,7 @@ server.get("/api/users/:id", (request, response) => {
 
     db.findById(id)
         .then(data => {
-            // zero means no user found with specified ID; SQLite servers start at index 1
-
-            console.log(data);
-
-            if (data === 0)
+            if (!data)
                 { response.status(404).json({ message: "The user with the specified ID does not exist." }) }
             // return the user object
             else
@@ -88,11 +84,9 @@ server.delete("/api/users/:id", (request, response) => {
     // first check to see whether user exists
     db.findById(id)
         .then(user => {
-            // zero means no user found with specified ID; SQLite servers start at index 1
-            if (user === 0)
-                {
-                    response.status(404).json({ message: "The user with the specified ID does not exist." })
-                }
+            
+            if (!data)
+                { response.status(404).json({ message: "The user with the specified ID does not exist." }) }
             
             // user exists; try to delete
             else
