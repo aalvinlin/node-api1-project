@@ -1,5 +1,6 @@
 // implement your API here
 const express = require("express");
+const cors = require("cors");
 const server = express();
 const port = 5000;
 
@@ -7,6 +8,7 @@ const db = require("./data/db");
 
 server.listen(port, () => console.log("listening on port", port));
 server.use(express.json());
+server.use(cors());
 
 // POST request: /api/users
 server.post("/api/users", (request, response) => {
@@ -109,31 +111,41 @@ server.delete("/api/users/:id", (request, response) => {
 })
 
 // PUT request: /api/users/:id
-server.put("/api/users/:id", (quest, response) => {
+server.put("/api/users/:id", (request, response) => {
 
-    const { id } = request.params;
+    if (!userInfo.name || !userInfo.bio)
+        {
+            console.log("missing info!")
+            response.status(400).json({ errorMessage: "Please provide name and bio for the user." })
+        }
+    
+    else
+        {
 
-    // first check to see whether user exists
-    db.findById(id)
-        .then(user => {
-            
-            if (!data)
-                { response.status(404).json({ message: "The user with the specified ID does not exist." }) }
-            
-            // user exists; try to delete
-            else
-                {
-                    db.remove(id)
-                        // return info of deleted user
-                        .then(data => {
-                            response.status(200).json(user);
-                        })
-                        .catch(error => {
-                            response.status(500).json({ message: "The user information could not be retrieved." })
-                        })
-                }
-        })
-        .catch(error => {
-            response.status(500).json({ message: "The user information could not be retrieved." })
-        })
+            const { id } = request.params;
+
+            // first check to see whether user exists
+            db.findById(id)
+                .then(user => {
+                    
+                    if (!user)
+                        { response.status(404).json({ message: "The user with the specified ID does not exist." }) }
+                    
+                    // user exists; try to delete
+                    else
+                        {
+                            db.update(id, request.body)
+                                // return info of deleted user
+                                .then(data => {
+                                    response.status(200).json(user);
+                                })
+                                .catch(error => {
+                                    response.status(500).json({ message: "The user information could not be modified." })
+                                })
+                        }
+                })
+                .catch(error => {
+                    response.status(500).json({ message: "The user information could not be retrieved." })
+                })
+        }
 })
