@@ -21,6 +21,9 @@ function findById(id) {
 }
 
 function insert(user) {
+
+  console.log("trying to insert", user)
+
   return db('users')
     .insert(user)
     .then(ids => ({ id: ids[0] }));
