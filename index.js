@@ -113,7 +113,7 @@ server.delete("/api/users/:id", (request, response) => {
 // PUT request: /api/users/:id
 server.put("/api/users/:id", (request, response) => {
 
-    if (!userInfo.name || !userInfo.bio)
+    if (!request.body.name || !request.body.bio)
         {
             console.log("missing info!")
             response.status(400).json({ errorMessage: "Please provide name and bio for the user." })
